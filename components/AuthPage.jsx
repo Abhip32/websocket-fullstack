@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { Mail, Lock, User, AlertCircle, Loader } from 'lucide-react';
 
 export const AuthPage = ({ onAuthSuccess }) => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +26,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
       }
 
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const response = await fetch(`http://localhost:4000${endpoint}`, {
+      const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
