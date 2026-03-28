@@ -12,6 +12,7 @@ import { fetchWithToken } from '@/lib/fetchWithToken';
 import io from 'socket.io-client';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export const Chat = () => {
   const socket = useSocket(SOCKET_URL);
@@ -165,7 +166,7 @@ export const Chat = () => {
       socket.emit('conversation:join', { conversationId: conversation._id });
 
       // Load previous messages
-      fetchWithToken(`http://localhost:4000/api/conversations/${conversation._id}/messages`)
+      fetchWithToken(`${API_BASE_URL}/api/conversations/${conversation._id}/messages`)
         .then((res) => res.json())
         .then((messages) => {
           chatState.setMessages(messages);
@@ -213,7 +214,7 @@ export const Chat = () => {
     try {
       // First, fetch the user by username to get their userId
       const userResponse = await fetchWithToken(
-        `http://localhost:4000/api/users/${newConversationUsername.trim()}`
+        `${API_BASE_URL}/api/users/${newConversationUsername.trim()}`
       );
       
       if (!userResponse.ok) {
@@ -223,7 +224,7 @@ export const Chat = () => {
       
       const targetUser = await userResponse.json();
 
-      const response = await fetchWithToken('http://localhost:4000/api/conversations/direct', {
+      const response = await fetchWithToken(`${API_BASE_URL}/api/conversations/direct`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -237,7 +238,7 @@ export const Chat = () => {
         
         // Fetch full conversation data with participants
         const fullResponse = await fetchWithToken(
-          `http://localhost:4000/api/users/${chatState.currentUser.userId}/conversations`
+          `${API_BASE_URL}/api/users/${chatState.currentUser.userId}/conversations`
         );
         const conversations = await fullResponse.json();
         chatState.setConversations(conversations);
@@ -261,7 +262,7 @@ export const Chat = () => {
   useEffect(() => {
     if (!currentUser || !socket) return;
 
-    fetchWithToken(`http://localhost:4000/api/users/${currentUser.userId}/conversations`)
+    fetchWithToken(`${API_BASE_URL}/api/users/${currentUser.userId}/conversations`)
       .then((res) => res.json())
       .then((conversations) => {
         setConversations(conversations);
